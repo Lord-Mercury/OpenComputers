@@ -1,6 +1,13 @@
 local ee,gpu,sc,bg,fg,re,sce
 local pr,cm,ls,ps=component.proxy,computer,component.list,computer.pullSignal
 
+local function bGP()
+	gpu.bind(sc.address)
+	re={}
+	re.width,re.height=gpu.maxResolution()
+	gpu.setResolution(re.width,re.height)
+end
+
 local function init()
 	local g=ls("gpu")()
 	local s=ls("screen")()
@@ -10,9 +17,7 @@ local function init()
 		gpu,sc,ee=pr(g),pr(s),pr(e)
 		computer.getBootAddress=function() return ee.getData() end
 		computer.setBootAddress=function(address) return ee.setData(address) end
-		gpu.bind(sc.address)
-		re={};re.width,re.height=gpu.maxResolution()
-		gpu.setResolution(re.width,re.height)
+		bGP()
 		sce=math.floor(re.height/2)
 	else
 		error("")
@@ -24,13 +29,6 @@ local function pu(t) while true do local e={ps()};if e[1]==t then return e end e
 local function sleep(timeout)
 	local deadline=cm.uptime() + (timeout or 0)
 	while cm.uptime()<deadline do ps(deadline - cm.uptime()) end
-end
-
-local function bGP()
-	gpu.bind(sc.address)
-	re={}
-	re.width,re.height=gpu.maxResolution()
-	gpu.setResolution(re.width,re.height)
 end
 
 local colors={b=0xDDDDDD,t1=0x444444,t2=0x999999,t3=0x888888}
